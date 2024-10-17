@@ -94,7 +94,7 @@ int run_iccom_test()
         printf("clock_gettime failed at start\n");
         return ret;
     }
-
+    printf("ICCOM SAMPLE start, channel %d\n", channel_no);
     ip.recv_buf = rbuf;
     ip.channel_no = channel_no;
     ip.recv_cb = callback;
