@@ -22,15 +22,14 @@ static int size_flag = 1;
 static uint8_t rbuf[ICCOM_BUF_MAX_SIZE];
 
 // global variables
-int ret, len;
-uint64_t  channel_iccom_test;
+int ret, len, channel_no;
 Iccom_channel_t pch;
 Iccom_init_param ip;
 Iccom_send_param sp;
 
 void print_help(int argc, char **argv)
 {
-    printf("Usage: %s [-s|-c|-h]\n", argv[0]);
+    printf("Usage: %s [-s|-c|-n|-h]\n", argv[0]);
     printf("    -n: number of iterations to test\n");
     printf("    -s: size of each iteration\n");
     printf("    -c: select channel for test (0-7)\n");
@@ -52,7 +51,7 @@ int parse_input_args(int argc, char **argv)
                 size_flag = strtoul(optarg, NULL, 10);
                 break;
             case 'c':
-                channel_iccom_test = strtoul(optarg, NULL, 10);
+                channel_no = strtoul(optarg, NULL, 10);
                 break;
             case 'h':
             case '?':
@@ -68,17 +67,12 @@ int parse_input_args(int argc, char **argv)
         return -1;
     }
 
-    if (channel_iccom_test > 7 || channel_iccom_test < 0)
+    if (channel_no > 7 || channel_no < 0)
     {
         printf("The channel for ICCOM testing must be within the range of 0 to 7 \n");
         return -1;
     }
 
-    if ((size_flag < 0) || (size_flag > 2048))
-    {
-        printf("Invalid size %d; values must be in range %d - %d\n", size_flag, 0, 2048);
-        return -1;
-    }
     return 0;
 }
 
@@ -102,7 +96,7 @@ int run_iccom_test()
     }
 
     ip.recv_buf = rbuf;
-    ip.channel_no = channel_iccom_test;
+    ip.channel_no = channel_no;
     ip.recv_cb = callback;
     ret = Iccom_lib_Init(&ip, &pch);
     if (ret == ICCOM_OK)
@@ -146,7 +140,6 @@ int run_iccom_test()
     printf("Throughput: %lu bytes/s\n", (transferred_data * 1000) / elapsed_ms);
     printf("Throughput: %1.2f MB/s\n", (transferred_data * 1000) / elapsed_ms / 1024.0 / 1024.0);
     printf("Error count: %d\n", err_cnt);
-
     return ret;
 }
 

@@ -28,7 +28,7 @@ enum iccom_command {
 #define CMD_HEADER		\
 		uint8_t cmd_id;
 
-#define MAX_ECHO_DATA_SIZE		(2048)
+#define MAX_ECHO_DATA_SIZE		(4096U)
 
 // #pragma pack(1)
 struct echo_command {

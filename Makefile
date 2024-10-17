@@ -15,8 +15,6 @@ REALNAME = $(SONAME).$(MINOR_VERSION)
 TARGET   = $(OUTDIR)/$(REALNAME)
 TESTSRC  = $(TESTDIR)/test.c
 TEST     = $(OUTDIR)/iccom-test
-APPSRC  = $(TESTDIR)/sample_app.c
-APP     = $(OUTDIR)/iccom-sample-app
 LOGLEVEL ?= LOGERR
 
 ifeq ($(LOGLEVEL),LOGERR)
@@ -28,7 +26,7 @@ else ifeq ($(LOGLEVEL),LOGDBG)
 else #ifeq ($(LOGLEVEL),LOGNONE)
 endif
 
-all : $(TARGET) $(TEST) $(APP)
+all : $(TARGET) $(TEST) 
 
 $(TARGET) : $(OBJS)
 	@mkdir -p $(OUTDIR)
@@ -41,8 +39,6 @@ $(OBJS): $(SRCS)
 $(TEST) : $(TESTSRC) $(TARGET)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(TESTSRC) $(TARGET) -o $@
 
-$(APP) : $(APPSRC) $(TARGET)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(TESTSRC) $(TARGET) -o $@
 
 .PHONY: clean
 clean :
