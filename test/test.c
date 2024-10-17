@@ -22,7 +22,8 @@ static int size_flag = 1;
 static uint8_t rbuf[ICCOM_BUF_MAX_SIZE];
 
 // global variables
-int ch = 0, ret, len;
+int ret, len;
+uint64_t  channel_iccom_test;
 Iccom_channel_t pch;
 Iccom_init_param ip;
 Iccom_send_param sp;
@@ -30,8 +31,9 @@ Iccom_send_param sp;
 void print_help(int argc, char **argv)
 {
     printf("Usage: %s [-s|-c|-h]\n", argv[0]);
-    printf("    -c: number of iterations to test\n");
+    printf("    -n: number of iterations to test\n");
     printf("    -s: size of each iteration\n");
+    printf("    -c: select channel for test (0-7)\n");
     printf("    -h: show this help\n");
 }
 
@@ -39,15 +41,18 @@ int parse_input_args(int argc, char **argv)
 {
     int c;
 
-    while ((c = getopt(argc, argv, "c:s:bprvh")) != -1)
+    while ((c = getopt(argc, argv, "n:s:c:h")) != -1)
     {
         switch (c)
         {
-            case 'c':
+            case 'n':
                 iteration_count_flag = strtoul(optarg, NULL, 10);
                 break;
             case 's':
                 size_flag = strtoul(optarg, NULL, 10);
+                break;
+            case 'c':
+                channel_iccom_test = strtoul(optarg, NULL, 10);
                 break;
             case 'h':
             case '?':
@@ -60,6 +65,12 @@ int parse_input_args(int argc, char **argv)
     if (iteration_count_flag < 1)
     {
         printf("Iteration count cannot (%d) be less than 1\n", iteration_count_flag);
+        return -1;
+    }
+
+    if (channel_iccom_test > 7 || channel_iccom_test < 0)
+    {
+        printf("The channel for ICCOM testing must be within the range of 0 to 7 \n");
         return -1;
     }
 
@@ -91,7 +102,7 @@ int run_iccom_test()
     }
 
     ip.recv_buf = rbuf;
-    ip.channel_no = ch;
+    ip.channel_no = channel_iccom_test;
     ip.recv_cb = callback;
     ret = Iccom_lib_Init(&ip, &pch);
     if (ret == ICCOM_OK)
