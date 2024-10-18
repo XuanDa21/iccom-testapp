@@ -23,9 +23,7 @@ static uint8_t rbuf[ICCOM_BUF_MAX_SIZE];
 
 // global variables
 int ret, len, channel_no;
-Iccom_channel_t pch;
-Iccom_init_param ip;
-Iccom_send_param sp;
+uint32_t data_rec = 0;
 
 void print_help(int argc, char **argv)
 {
@@ -44,22 +42,21 @@ int parse_input_args(int argc, char **argv)
     {
         switch (c)
         {
-            case 'n':
-                iteration_count_flag = strtoul(optarg, NULL, 10);
-                break;
-            case 's':
-                size_flag = strtoul(optarg, NULL, 10);
-                break;
-            case 'c':
-                channel_no = strtoul(optarg, NULL, 10);
-                break;
-            case 'h':
-            case '?':
-                print_help(argc, argv);
-                return -1;
+        case 'n':
+            iteration_count_flag = strtoul(optarg, NULL, 10);
+            break;
+        case 's':
+            size_flag = strtoul(optarg, NULL, 10);
+            break;
+        case 'c':
+            channel_no = strtoul(optarg, NULL, 10);
+            break;
+        case 'h':
+        case '?':
+            print_help(argc, argv);
+            return -1;
         }
     }
-    
 
     if (iteration_count_flag < 1)
     {
@@ -76,19 +73,24 @@ int parse_input_args(int argc, char **argv)
     return 0;
 }
 
+
 static void callback(enum Iccom_channel_number ch, uint32_t sz, uint8_t *buf)
 {
+    data_rec += sz;
     printf("[CA5x channel %d] Received %u bytes", ch, sz);
     printf("\n");
 }
 
 int run_iccom_test()
 {
+
+    Iccom_channel_t pch;
+    Iccom_init_param ip;
+    Iccom_send_param sp;
     struct echo_command cmd = {.cmd_id = NONE};
     struct timespec start_time, end_time;
     int curr_iter, ret = 0, err_cnt = 0;
     uint64_t elapsed_ms, transferred_data;
-    ret = clock_gettime(CLOCK_MONOTONIC, &start_time);
     if (ret < 0)
     {
         printf("clock_gettime failed at start\n");
@@ -103,14 +105,23 @@ int run_iccom_test()
     {
         printf("ICCOM initialized successfully.\n");
     }
+    else
+    {
+        printf("Iccom_lib_Init error %d\n", ret);
+        return 1;
+    }
 
+    ret = clock_gettime(CLOCK_MONOTONIC, &start_time);
     for (curr_iter = 0; curr_iter < iteration_count_flag; curr_iter++)
     {
-        if (size_flag == 0) {
-            sp.send_buf = NULL;  
-        } else {
-            memset(cmd.data, (curr_iter & 0xFF), size_flag);  
-            sp.send_buf = (uint8_t *)&cmd;  
+        if (size_flag == 0)
+        {
+            sp.send_buf = NULL;
+        }
+        else
+        {
+            memset(cmd.data, (curr_iter & 0xFF), size_flag);
+            sp.send_buf = (uint8_t *)&cmd;
         }
         size_t pkt_size = size_flag;
         do
@@ -118,15 +129,21 @@ int run_iccom_test()
             sp.send_size = pkt_size;
             sp.channel_handle = pch;
             ret = Iccom_lib_Send(&sp);
-            // Waiting for Receive data from CR7
-            // sleep(1);
             if (ret != ICCOM_OK)
             {
                 printf("Iccom_lib_Send error %d\n", ret);
-                return -1;
-            } 
+                return 1;
+            }
+            // Waiting for Receive data from CR7, Sleep for 10 milliseconds
+            usleep(10000);
             printf("[CA5x channel %d] Sent %ld bytes\n", channel_no, pkt_size);
         } while (ret < 0);
+    }
+    ret = clock_gettime(CLOCK_MONOTONIC, &end_time);
+    if (ret < 0)
+    {
+        printf("clock_gettime failed at end\n");
+        return ret;
     }
 
     ret = clock_gettime(CLOCK_MONOTONIC, &end_time);
@@ -136,21 +153,25 @@ int run_iccom_test()
         return ret;
     }
 
-    elapsed_ms = (end_time.tv_sec - start_time.tv_sec) * MS_IN_S + (end_time.tv_nsec - start_time.tv_nsec) / NS_IN_MS;
+    ret = Iccom_lib_Final(pch);
+    if (ret == ICCOM_OK)
+    {
+        printf("The channel %d has been closed!\n", channel_no);
+    } else {
+        printf("Close the channel %d failed.\n", channel_no);
+        return 1;
+    }
+
+    elapsed_ms = ((end_time.tv_sec - start_time.tv_sec) * MS_IN_S + (end_time.tv_nsec - start_time.tv_nsec) / NS_IN_MS);
     transferred_data = size_flag * iteration_count_flag;
     printf("Elapsed time [ms]: %lu\n", elapsed_ms);
     printf("Data transferred: %lu\n", transferred_data);
+    printf("Data received: %d\n", data_rec);
     printf("Throughput: %lu bytes/s\n", (transferred_data * 1000) / elapsed_ms);
     printf("Throughput: %1.2f MB/s\n", (transferred_data * 1000) / elapsed_ms / 1024.0 / 1024.0);
     printf("Error count: %d\n", err_cnt);
-    ret = Iccom_lib_Final(pch);
-    if (ret < 0) {
-        printf("Closed the channel %d failed.\n", channel_no);
-        return -1;
-    };
     return ret;
 }
-
 
 int main(int argc, char **argv)
 {
