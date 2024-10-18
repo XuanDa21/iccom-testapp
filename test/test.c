@@ -78,7 +78,7 @@ int parse_input_args(int argc, char **argv)
 
 static void callback(enum Iccom_channel_number ch, uint32_t sz, uint8_t *buf)
 {
-    printf("Received %u bytes: ", sz);
+    printf("[CA5x channel %d] Received %u bytes", ch, sz);
     printf("\n");
 }
 
@@ -118,11 +118,14 @@ int run_iccom_test()
             sp.send_size = pkt_size;
             sp.channel_handle = pch;
             ret = Iccom_lib_Send(&sp);
+            // Waiting for Receive data from CR7
+            // sleep(1);
             if (ret != ICCOM_OK)
             {
                 printf("Iccom_lib_Send error %d\n", ret);
                 return -1;
-            }
+            } 
+            printf("[CA5x channel %d] Sent %ld bytes\n", channel_no, pkt_size);
         } while (ret < 0);
     }
 
@@ -140,6 +143,11 @@ int run_iccom_test()
     printf("Throughput: %lu bytes/s\n", (transferred_data * 1000) / elapsed_ms);
     printf("Throughput: %1.2f MB/s\n", (transferred_data * 1000) / elapsed_ms / 1024.0 / 1024.0);
     printf("Error count: %d\n", err_cnt);
+    ret = Iccom_lib_Final(pch);
+    if (ret < 0) {
+        printf("Closed the channel %d failed.\n", channel_no);
+        return -1;
+    };
     return ret;
 }
 
