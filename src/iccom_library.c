@@ -609,7 +609,6 @@ static void *iccom_lib_recv_thread(void *arg)
 				l_channel_info->recv_buf);
 		} else {
 			/* end data receive */
-			printf("end data receive");
 			if (errno == ECANCELED) {
 				break;
 			}

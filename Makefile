@@ -26,7 +26,7 @@ else ifeq ($(LOGLEVEL),LOGDBG)
 else #ifeq ($(LOGLEVEL),LOGNONE)
 endif
 
-all : $(TARGET) $(TEST) 
+all : $(TARGET) $(TEST)
 
 $(TARGET) : $(OBJS)
 	@mkdir -p $(OUTDIR)
@@ -38,7 +38,6 @@ $(OBJS): $(SRCS)
 
 $(TEST) : $(TESTSRC) $(TARGET)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(TESTSRC) $(TARGET) -o $@
-
 
 .PHONY: clean
 clean :
