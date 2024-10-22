@@ -15,6 +15,8 @@ REALNAME = $(SONAME).$(MINOR_VERSION)
 TARGET   = $(OUTDIR)/$(REALNAME)
 TESTSRC  = $(TESTDIR)/test.c
 TEST     = $(OUTDIR)/iccom-test
+TESTABNORMALSRC  = $(TESTDIR)/abnormal_test.c
+TESTABNORMAL     = $(OUTDIR)/iccom-abnormal-test
 LOGLEVEL ?= LOGERR
 
 ifeq ($(LOGLEVEL),LOGERR)
@@ -26,7 +28,7 @@ else ifeq ($(LOGLEVEL),LOGDBG)
 else #ifeq ($(LOGLEVEL),LOGNONE)
 endif
 
-all : $(TARGET) $(TEST)
+all : $(TARGET) $(TEST) $(TESTABNORMAL) $(TESTPERFORMANCE)
 
 $(TARGET) : $(OBJS)
 	@mkdir -p $(OUTDIR)
@@ -38,6 +40,9 @@ $(OBJS): $(SRCS)
 
 $(TEST) : $(TESTSRC) $(TARGET)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(TESTSRC) $(TARGET) -o $@
+
+$(TESTABNORMAL) : $(TESTABNORMALSRC) $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(TESTABNORMALSRC) $(TARGET) -o $@
 
 .PHONY: clean
 clean :
