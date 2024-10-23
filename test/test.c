@@ -161,10 +161,19 @@ int run_iccom_test()
             usleep(10000);
             ++i;
         }
+        // Compare sent and received data
+        if (memcmp(sp.send_buf, recv_buf, sp.send_size) == 0)
+        {
+            printf("Data sent and received are equal.\n");
+        }
+        else
+        {
+            printf("Data mismatch between sent and received.\n");
+        }
         transferred_bytes = size_flag * i;
-        printf("Elapsed time [ms]: %lu\n", elapsed_ms);
         printf("bytes transferred: %lu\n", transferred_bytes);
         printf("bytes received: %ld\n", rec_bytes);
+        printf("Elapsed time [ms]: %lu\n", elapsed_ms);
         printf("Throughput: %lu bytes/s\n", (transferred_bytes * 1000) / elapsed_ms);
         printf("Throughput: %1.2f MB/s\n", (transferred_bytes * 1000) / elapsed_ms / 1024.0 / 1024.0);
     }
@@ -208,13 +217,13 @@ int run_iccom_test()
         {
             printf("Data mismatch between sent and received.\n");
         }
-        
+
         elapsed_ms = ((current_time.tv_sec - start_time.tv_sec) * MS_IN_S +
                       (current_time.tv_nsec - start_time.tv_nsec) / NS_IN_MS);
         transferred_bytes = size_flag * iteration_count_flag;
-        printf("Elapsed time [ms]: %lu\n", elapsed_ms);
         printf("Bytes transferred: %lu\n", transferred_bytes);
         printf("Bytes received: %ld\n", rec_bytes);
+        printf("Elapsed time [ms]: %lu\n", elapsed_ms);
         printf("Throughput: %lu bytes/s\n", (transferred_bytes * 1000) / elapsed_ms);
         printf("Throughput: %1.2f MB/s\n", (transferred_bytes * 1000) / elapsed_ms / 1024.0 / 1024.0);
     }
