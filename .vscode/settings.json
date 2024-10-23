@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./automation_test/common"
+    ]
+}

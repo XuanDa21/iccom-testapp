@@ -1,0 +1,29 @@
+
+root@salvator-x:~# insmod iccom.ko
+[  172.262329] ICCOM driver initialization(R-Car Rev.1.0.0)
+[  172.271897] ICCOM Channel0 ready
+[  172.276715] ICCOM Channel1 ready
+[  172.281285] ICCOM Channel2 ready
+[  172.285872] ICCOM Channel3 ready
+[  172.290397] ICCOM Channel4 ready
+[  172.294988] ICCOM Channel5 ready
+[  172.299526] ICCOM Channel6 ready
+[  172.304037] ICCOM Channel7 ready
+[  172.310737] ICCOM driver initialization finish
+root@salvator-x:~# 
+root@salvator-x:~# iccom-abnormal-test -t 5 -c 0
+[CA5x channel 0] Sent 1 bytes
+[CA5x channel 0] Received 1 bytes
+[  173.417953] [Err]Wait all ACK send failed.
+[ERR]Iccom_lib_Final() : ioctl : channel No. = 0, errno = 110:Connection timed out, return code = -1
+Iccom_lib_Final error -1
+[  173.833867] [Err]Wait all ACK send failed.
+[ERR]Iccom_lib_Final() : ioctl : channel No. = 0, errno = 110:Connection timed out, return code = -1
+Iccom_lib_Final error -1
+root@salvator-x:~# 
+root@salvator-x:~# rmmod iccom.ko
+[  174.484443] ICCOM driver de-initialization
+[  174.501113] ICCOM driver de-initialization finish
+root@salvator-x:~# 
+ 
+#### Result: OK ####
