@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "1.py", line 9, in <module>
-    import restart_board
-  File "common/restart_board.py", line 10, in <module>
-    import control_board
-ImportError: No module named control_board
