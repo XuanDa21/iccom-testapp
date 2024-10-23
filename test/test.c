@@ -26,8 +26,8 @@ static uint8_t rbuf[ICCOM_BUF_MAX_SIZE];
 
 // global variables
 int ret, len, channel_no, minutes = 0;
-uint32_t data_rec = 0;
-
+uint64_t rec_bytes = 0;
+uint8_t *recv_buf;
 enum iccom_command
 {
     NONE = 0,
@@ -94,9 +94,10 @@ int parse_input_args(int argc, char **argv)
 
 static void callback(enum Iccom_channel_number ch, uint32_t sz, uint8_t *buf)
 {
-    data_rec += sz;
     printf("[CA5x channel %d] Received %u bytes", ch, sz);
     printf("\n");
+    recv_buf = buf;
+    rec_bytes += sz;
 }
 
 int run_iccom_test()
@@ -107,7 +108,7 @@ int run_iccom_test()
     struct echo_command cmd = {.cmd_id = NONE};
     struct timespec start_time, current_time;
     int curr_iter, ret = 0;
-    uint64_t elapsed_ms, transferred_data, total_duration_ms;
+    uint64_t elapsed_ms, transferred_bytes, total_duration_ms;
     // Calculate the total duration in milliseconds
     total_duration_ms = minutes * MS_IN_S * 60;
     ret = clock_gettime(CLOCK_MONOTONIC, &start_time);
@@ -160,12 +161,12 @@ int run_iccom_test()
             usleep(10000);
             ++i;
         }
-        transferred_data = size_flag * i;
+        transferred_bytes = size_flag * i;
         printf("Elapsed time [ms]: %lu\n", elapsed_ms);
-        printf("Data transferred: %lu\n", transferred_data);
-        printf("Data received: %d\n", data_rec);
-        printf("Throughput: %lu bytes/s\n", (transferred_data * 1000) / elapsed_ms);
-        printf("Throughput: %1.2f MB/s\n", (transferred_data * 1000) / elapsed_ms / 1024.0 / 1024.0);
+        printf("bytes transferred: %lu\n", transferred_bytes);
+        printf("bytes received: %ld\n", rec_bytes);
+        printf("Throughput: %lu bytes/s\n", (transferred_bytes * 1000) / elapsed_ms);
+        printf("Throughput: %1.2f MB/s\n", (transferred_bytes * 1000) / elapsed_ms / 1024.0 / 1024.0);
     }
     else
     {
@@ -198,14 +199,24 @@ int run_iccom_test()
             return ret;
         }
 
+        // Compare sent and received data
+        if (memcmp(sp.send_buf, recv_buf, sp.send_size) == 0)
+        {
+            printf("Data sent and received are equal.\n");
+        }
+        else
+        {
+            printf("Data mismatch between sent and received.\n");
+        }
+        
         elapsed_ms = ((current_time.tv_sec - start_time.tv_sec) * MS_IN_S +
                       (current_time.tv_nsec - start_time.tv_nsec) / NS_IN_MS);
-        transferred_data = size_flag * iteration_count_flag;
+        transferred_bytes = size_flag * iteration_count_flag;
         printf("Elapsed time [ms]: %lu\n", elapsed_ms);
-        printf("Data transferred: %lu\n", transferred_data);
-        printf("Data received: %d\n", data_rec);
-        printf("Throughput: %lu bytes/s\n", (transferred_data * 1000) / elapsed_ms);
-        printf("Throughput: %1.2f MB/s\n", (transferred_data * 1000) / elapsed_ms / 1024.0 / 1024.0);
+        printf("Bytes transferred: %lu\n", transferred_bytes);
+        printf("Bytes received: %ld\n", rec_bytes);
+        printf("Throughput: %lu bytes/s\n", (transferred_bytes * 1000) / elapsed_ms);
+        printf("Throughput: %1.2f MB/s\n", (transferred_bytes * 1000) / elapsed_ms / 1024.0 / 1024.0);
     }
 
     ret = Iccom_lib_Final(pch);
