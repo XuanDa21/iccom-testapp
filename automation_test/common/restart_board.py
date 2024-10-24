@@ -114,7 +114,6 @@ if __name__ == '__main__':
     MODULE_TEST=""
     if (len(sys.argv)==2):
 	MODULE_TEST=sys.argv[1]
-
     a=conserial.serial_thread(config.SERIAL_PORT,1,MODULE_TEST)
     a.start()
     a.buff=""

@@ -4,7 +4,7 @@ from time import sleep
 #--------- UKV config ------------#
 MODULE_TEST="ICCOM"
 SOC="M3v3.0"
-SERIAL_PORT="/dev/ttyUSB4"
+SERIAL_PORT="/dev/ttyUSB3"
 SERIAL_PORT_SC1="/dev/ttyUSB10"
 BOOT_NFS=True
 board_NO = "7030"

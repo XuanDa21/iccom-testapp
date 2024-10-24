@@ -13,6 +13,6 @@ if __name__ == '__main__':
     a.start()
     a.send("insmod iccom.ko")
     for i in range(8):
-        a.send("iccom-test -c {} -s 28".format(i))
+        a.send("iccom-test -c {} -s 28 -n 100".format(i))
     a.send("rmmod iccom.ko")
     print_result.func_pass(a)
