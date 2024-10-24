@@ -5,8 +5,6 @@ from time import sleep
 MODULE_TEST="ICCOM"
 SOC="M3v3.0"
 SERIAL_PORT="/dev/ttyUSB3"
-SERIAL_PORT_SC1="/dev/ttyUSB10"
-BOOT_NFS=True
 board_NO = "7030"
 PLATFORM = ""
 if SOC == "E3v1.1":
@@ -29,21 +27,6 @@ FEATBOX=True
 FEATBOX=False
 PI_IPADDR="192.168.10.174"
 PI_NUM="0x15"
-
-FEATBOX_USB_MODULE=False
-FEATBOX_USB2_CH1={'device':'1', 'memory':'port2', 'keyboard':'port1', 'mouse':'port3', 'function':'port4'}
-FEATBOX_USB2_CH2={'device':'1', 'memory':'port2', 'keyboard':'port1', 'mouse':'port3', 'function':'port4'}
-FEATBOX_USB3={'device':'1','function':'port4'}
-
-
-IP_ADDR="192.168.10.55"
-NET_MASK="255.255.255.0"
-DEFAULT_GW="192.168.10.1"
-
-SERVER_ADDR="192.168.10.98"
-
-SER_USRNAME="bsp"
-SER_PASS="Pass1234"
 
 
 PASS_MEG="#### Result: OK ####"
