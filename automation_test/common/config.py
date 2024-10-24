@@ -8,6 +8,7 @@ SERIAL_PORT="/dev/ttyUSB3"
 SERIAL_PORT_SC1="/dev/ttyUSB10"
 BOOT_NFS=True
 board_NO = "7030"
+PLATFORM = ""
 if SOC == "E3v1.1":
     NUM_CPU=2
     PLATFORM="ebisu"
