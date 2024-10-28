@@ -5,7 +5,8 @@
 - SERIAL_PORT: Specify the port you are using.
 - Board_NO: the board number.
 
-# Before running, set execute permissions for SERIAL_PORT: -> Example: chmod 777 /dev/ttyUSB3"
+# Before running, set execute permissions for SERIAL_PORT
+- Example: chmod 777 /dev/ttyUSB3
  
 # Example command to run
 - To see the defined test cases, refer to the testcase.py file to check which test case you are running
