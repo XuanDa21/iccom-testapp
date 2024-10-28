@@ -39,4 +39,5 @@ list_TC = {
     18:'BSPv5.3.4_ICCOM_{}_{}_SystemEvaluation_2_{}'.format(config.SOC,board_NO, formatted_date),    
     19:'BSPv5.3.4_ICCOM_{}_{}_SystemEvaluation_3_{}'.format(config.SOC,board_NO, formatted_date),
     20:'BSPv5.3.4_ICCOM_{}_{}_SystemEvaluation_4_{}'.format(config.SOC,board_NO, formatted_date),
+    21:'BSPv5.3.4_ICCOM_{}_{}_SystemEvaluation_5_{}'.format(config.SOC,board_NO, formatted_date),
 }

@@ -11,7 +11,7 @@ import restart_board
 if __name__ == '__main__':
     a=conserial.serial_thread(config.SERIAL_PORT,1, config.MODULE_TEST)
     a.start()
-    a.send("insmod iccom.ko")
+    a.send("modprobe iccom")
     for i in range(8):
         a.send("iccom-test -s 0 -b 0 -c {}".format(i))
     a.send("rmmod iccom.ko")
