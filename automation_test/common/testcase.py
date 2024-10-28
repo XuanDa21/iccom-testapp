@@ -30,7 +30,7 @@ list_TC = {
     13:'BSPv5.3.4_ICCOM_{}_{}_Abnormal_6_{}'.format(config.SOC,board_NO, formatted_date),
     14:'BSPv5.3.4_ICCOM_{}_{}_Abnormal_7_{}'.format(config.SOC,board_NO, formatted_date), 
     
-    # Boudary
+    # Boundary
     15:'BSPv5.3.4_ICCOM_{}_{}_Boundary_1_{}'.format(config.SOC,board_NO, formatted_date),
     16:'BSPv5.3.4_ICCOM_{}_{}_Boundary_2_{}'.format(config.SOC,board_NO, formatted_date),
     
