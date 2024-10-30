@@ -1,4 +1,4 @@
 #!/usr/bin/python
 import os
 os.system('rm -rf logs/*')
-os.system("rm -rf common/*.pyc")
+os.system('rm -rf common/__pycache__')

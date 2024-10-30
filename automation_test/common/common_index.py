@@ -30,24 +30,24 @@ def execute_test(TC):
 
     try:    
         #H2P: Using subprocess.call instead of os.system to exit immediately when executing Ctrl+C
-        subprocess.call('python2 {}.py  2>&1 | tee logs/tmp_{}.log'.format(num_TC(TC),num_TC(TC)),shell=True)
+        subprocess.call('python3 {}.py  2>&1 | tee logs/tmp_{}.log'.format(num_TC(TC),num_TC(TC)),shell=True)
  
         with open('logs/tmp_{}.log'.format(num_TC(TC)),'r') as f:
             lines = f.readlines()
    
         for line in lines:
-            result = re.search("#### Result: (.\S) ####$",line)
+            result = re.search(r"#### Result: (.\S) ####$",line)
 
         if (result != None):
             result = line.split()[2]
         else:
             if (config.RESTART_IF_FAILED == True):
                 while count < 2: #Retest 2 times when result is NG
-                  subprocess.call('python2 {}.py  2>&1 | tee logs/tmp_{}.log'.format(num_TC(TC),num_TC(TC)),shell=True)
+                  subprocess.call('python3 {}.py  2>&1 | tee logs/tmp_{}.log'.format(num_TC(TC),num_TC(TC)),shell=True)
                   with open('logs/tmp_{}.log'.format(num_TC(TC)),'r') as f:
                       lines = f.readlines()
                   for line in lines:
-                      result = re.search("#### Result: (.\S) ####$",line)
+                      result = re.search(r"#### Result: (.\S) ####$",line)
                   if (result != None):
                       result = line.split()[2]
                       break
@@ -55,7 +55,7 @@ def execute_test(TC):
                       result = 'NG'
                   count += 1
                   if (count == 2):
-                      print "\n \n" +  config.FAIL_MEG
+                      print ("\n \n" +  config.FAIL_MEG)
 
         end_time = datetime.now()
         print('\nEnd test: {}'.format(end_time))
@@ -88,7 +88,7 @@ def boot_board(option):
                 name = "boot"
     except:
         name = "boot" 
-    os.system('python2 ../common/restart_board.py  2>&1 | tee logs/{}.log'.format(name)) 
+    os.system('python3 ../common/restart_board.py  2>&1 | tee logs/{}.log'.format(name)) 
 
     # Type 1: _index.py
     

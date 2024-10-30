@@ -2,14 +2,13 @@
 from time import sleep
 import sys
 import config
-import restart_board
 import control_board
 
 def func_fail(self):
     if (config.RESTART_IF_FAILED == False):
-        print "\n \n" +  config.FAIL_MEG
+        print ("\n \n" +  config.FAIL_MEG)
     else:
-        print "\n \n Retest"
+        print ("\n \n Retest")
 
     sleep(0.5)
     self.buff=""
@@ -32,19 +31,22 @@ def func_fail(self):
 
         self.send('\n',0,False)
 
-    restart_board.after_boot(self)
-
     self.serial.close()
     exit(0)
     
 def func_pass(self):
-    print "\n \n" + config.PASS_MEG
+    print ("\n \n" + config.PASS_MEG)
     self.serial.close()
     exit(0)
 
 def wrong_env(self):
-    print "\nWrong environment!"
-    print "\n " + config.SKIP_MEG
+    print ("\nWrong environment!")
+    print ("\n " + config.SKIP_MEG)
     self.serial.close()
     exit(0)
+    
+def print_item(a, n, type):
+    print(f"\n\n----------{type} test case {n}----------\n")
+    sys.stdout.flush()
+    a.buff = ""
 

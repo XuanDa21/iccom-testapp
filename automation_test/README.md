@@ -10,8 +10,8 @@
  
 # Example command to run
 - To see the defined test cases, refer to the testcase.py file to check which test case you are running
-- Run a single test case: Python2 _index.py 1
+- Run a single test case: Python3 _index.py 1
 - Run multiple test cases: 
-    + Python2 _index.py 1:2
-    + Python2 _index.py 1 2 3
+    + Python3 _index.py 1:2
+    + Python3 _index.py 1 2 3
 - Clean the logs and pyc file: Python2 clean.py

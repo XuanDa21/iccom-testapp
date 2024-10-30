@@ -4,7 +4,7 @@ from time import sleep
 #--------- UKV config ------------#
 MODULE_TEST="ICCOM"
 SOC="M3v3.0"
-SERIAL_PORT="/dev/ttyUSB3"
+SERIAL_PORT="/dev/ttyUSB0"
 board_NO = "7030"
 PLATFORM = ""
 if SOC == "E3v1.1":

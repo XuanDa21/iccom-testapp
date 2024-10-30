@@ -2,59 +2,9 @@
 from time import sleep
 import sys
 import config
-import conserial
 import control_board
-import re
 
-def after_boot(a):
-    if (a.module_test == "USB2F"):
-        if (config.PLATFORM == "salvator-x"):
-            a.send("echo e659c000.usb > /sys/bus/platform/drivers/renesas_usbhs/unbind",0.005,True,120)
-
-    if (a.module_test == "SATA"):
-        a.buff=""
-        MOUNT_POINT = sata.mountpoint(a)
-
-        DEVICE = re.findall(r'[A-Za-z]+|\d+', MOUNT_POINT)[0]
-
-        a.send('(echo o; echo n; echo p; echo 1; echo 2048; echo "+5G"; echo Y; echo t; echo 83; echo w) | fdisk /dev/{}'.format(DEVICE))
-
-        a.buff=""
-        a.send('echo y | mkfs.ext4 -L "HD" /dev/{}1'.format(DEVICE))
-
-        a.buff=""
-        a.send('(echo n; echo p; echo 2; echo 10487808; echo "+5G"; echo Y; echo t; echo 2; echo 83; echo w) | fdisk /dev/{}'.format(DEVICE))
-
-        a.buff=""
-        a.send('echo y | mkfs.ext4 -L "HD" /dev/{}2'.format(DEVICE))
-
-        a.buff=""
-        a.send('fdisk -l /dev/{}'.format(DEVICE))
-
-    if (a.module_test == "USB_HOST"):
-        a.buff=""
-        MOUNT_POINT = None
-        MOUNT_POINT = usb.mountpoint(a,'usb2ch1')
-        if (MOUNT_POINT != None):
-            a.buff=""
-            a.send('echo y | mkfs.ext4 -L "USB2-1" /dev/{}'.format(MOUNT_POINT))
-        
-        a.buff=""
-        MOUNT_POINT = None
-        MOUNT_POINT = usb.mountpoint(a,'usb2ch2')
-        if (MOUNT_POINT != None):
-            a.buff=""
-            a.send('echo y | mkfs.ext4 -L "USB2-1" /dev/{}'.format(MOUNT_POINT))
-
-        a.buff=""
-        MOUNT_POINT = None
-        MOUNT_POINT = usb.mountpoint(a,'usb3')
-        if (MOUNT_POINT != None):
-            a.buff=""
-            a.send('echo y | mkfs.ext4 -L "USB2-1" /dev/{}'.format(MOUNT_POINT))
-
-def main(a):
-
+def execute(a):
     #print('\n------------ BOARD -------------\n')
     sys.stdout.flush()
 
@@ -106,19 +56,5 @@ def main(a):
     a.send('\n',0,True,120)
     sleep(5)
     a.send('\n',0,True,120)
-    after_boot(a)
-    a.send('\n',0,False)
 
-if __name__ == '__main__':
-
-    MODULE_TEST=""
-    if (len(sys.argv)==2):
-	MODULE_TEST=sys.argv[1]
-    a=conserial.serial_thread(config.SERIAL_PORT,1,MODULE_TEST)
-    a.start()
-    a.buff=""
-
-    main(a)
-
-    a.serial.close()
 
