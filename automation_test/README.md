@@ -14,4 +14,4 @@
 - Run multiple test cases: 
     + Python3 _index.py 1:2
     + Python3 _index.py 1 2 3
-- Clean the logs and pyc file: Python2 clean.py
+- Clean the logs and pyc file: Python3 clean.py
