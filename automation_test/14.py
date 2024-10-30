@@ -12,7 +12,7 @@ if __name__ == '__main__':
     a=SerialThread(config.SERIAL_PORT,1, config.MODULE_TEST)
     a.start()
     print_result.print_item(a,7,"Abnormal")
-    restart_board.main(a)
+    restart_board.execute(a)
     a.send("modprobe iccom")
     for i in range(8):
         a.send("iccom-abnormal-test -t 6 -c {} -n 10".format(i))
