@@ -92,7 +92,7 @@ def boot_board(option):
 
     # Type 1: _index.py
     
-def main():    
+def execute():    
     if (len(sys.argv)==1):
         for i in testcase.list_TC:
             execute_test(i)
