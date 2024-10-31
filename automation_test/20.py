@@ -20,6 +20,6 @@ if __name__ == '__main__':
     a.send("gst-launch-1.0 filesrc location=RENESAS_COCKPIT_ImageVideo_1920x1080_60fps.mp4 ! qtdemux ! queue ! h264parse  ! omxh264dec ! waylandsink &")
     a.send("gst-launch-1.0 filesrc location=RENESAS_COCKPIT_ImageVideo_1920x1080_60fps.mp4 ! qtdemux ! queue ! h264parse  ! omxh264dec ! waylandsink &")
     for i in range(8):
-        a.send(" iccom-test -s 2048 -n 1000 -c {}".format(i))
+        a.send(f"iccom-test -s 2048 -n 1000 -c {i}")
     a.send("rmmod iccom.ko")
     print_result.func_pass(a)

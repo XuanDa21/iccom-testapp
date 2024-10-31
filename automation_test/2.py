@@ -14,6 +14,6 @@ if __name__ == '__main__':
     print_result.print_item(a,2,"Normal")
     a.send("modprobe iccom")
     for i in range(8):
-        a.send("iccom-test -c {} -s 28 -n 100".format(i))
+        a.send(f"iccom-test -c {i} -s 28 -n 100")
     a.send("rmmod iccom.ko")
     print_result.func_pass(a)

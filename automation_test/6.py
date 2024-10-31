@@ -7,13 +7,31 @@ from conserial import SerialThread
 import print_result
 import config
 import restart_board
-
+commands1 = (
+    "iccom-test -c 0 -n 2048 -s 2048 & "
+    "iccom-test -c 1 -n 2048 -s 2048 & "
+    "iccom-test -c 2 -n 2048 -s 2048 & "
+    "iccom-test -c 3 -n 2048 -s 2048 & "
+)
+commands2 = (
+    "iccom-test -c 4 -n 2048 -s 2048 & "
+    "iccom-test -c 5 -n 2048 -s 2048 & "
+    "iccom-test -c 6 -n 2048 -s 2048 & "
+    "iccom-test -c 7 -n 2048 -s 2048 & "
+)
 if __name__ == '__main__':
     a=SerialThread(config.SERIAL_PORT,1, config.MODULE_TEST)
     a.start()
     print_result.print_item(a,6,"Normal")
+    restart_board.execute(a)
     a.send("modprobe iccom")
-    for i in range(8):
-        a.send("iccom-test -c {} -n 2048 -s 2048 &".format(i))
+    a.send(commands1, 0.001, False)
+    sleep(60)
+    a.send("\x03")
+    sleep(0.01)
+    a.send(commands2, 0.001, False)
+    sleep(60)
+    a.send("\x03")
+    sleep(0.01)
     a.send("rmmod iccom.ko")
     print_result.func_pass(a)

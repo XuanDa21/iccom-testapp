@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import sys
 import re
+from time import sleep
 from datetime import datetime
 import os
 import testcase

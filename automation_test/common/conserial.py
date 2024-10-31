@@ -1,4 +1,4 @@
-#!/usr/bin/python33
+#!/usr/bin/python3
 import threading
 import serial
 import sys
@@ -42,7 +42,8 @@ class SerialThread(threading.Thread):
         self.serial.port = com
         self.serial.stopbits = serial.STOPBITS_ONE
         self.serial.xonxoff = 0
-        self.serial.timeout = 358
+        self.serial.write_timeout = None
+        self.serial.timeout = None
 
         try:
             self.serial.open()

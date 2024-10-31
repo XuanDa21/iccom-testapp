@@ -15,6 +15,6 @@ if __name__ == '__main__':
     restart_board.execute(a)
     a.send("modprobe iccom")
     for i in range(8):
-        a.send("iccom-abnormal-test -t 5 -c {} -n 10".format(i))
+        a.send(f"iccom-abnormal-test -t 5 -c {i} -n 10")
     a.send("rmmod iccom.ko")
     print_result.func_pass(a)

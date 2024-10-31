@@ -15,6 +15,6 @@ if __name__ == '__main__':
     a.send("modprobe iccom")
     a.send("./stress --cpu 4 --io 4 --vm 4 --vm-bytes 512MB --timeout 4000s &")
     for i in range(8):
-        a.send("iccom-test -s 2048 -n 1000 -c {}".format(i))
+        a.send(f"iccom-test -s 2048 -n 1000 -c {i}")
     a.send("rmmod iccom.ko")
     print_result.func_pass(a)
