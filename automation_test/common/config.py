@@ -1,7 +1,4 @@
 #!/usr/bin/python3
-from time import sleep
-
-#--------- UKV config ------------#
 MODULE_TEST="ICCOM"
 SOC="M3v3.0"
 SERIAL_PORT="/dev/ttyUSB0"
@@ -25,8 +22,8 @@ elif SOC.find("M3v1.2") != -1:
 
 FEATBOX=True
 FEATBOX=False
-PI_IPADDR="192.168.10.174"
-PI_NUM="0x15"
+PI_IPADDR="xxx"
+PI_NUM="xxx"
 
 
 PASS_MEG="#### Result: OK ####"
