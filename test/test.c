@@ -160,15 +160,16 @@ int run_iccom_test()
             printf("[CA5x channel %d] Sent %d bytes\n", channel_no, size_flag);
             usleep(10000);
             ++i;
-        }
-        // Compare sent and received data
-        if (memcmp(sp.send_buf, recv_buf, sp.send_size) == 0)
-        {
-            printf("Data sent and received are equal.\n");
-        }
-        else
-        {
-            printf("Data mismatch between sent and received.\n");
+            // Compare sent and received data
+            if (memcmp(sp.send_buf, recv_buf, sp.send_size) == 0)
+            {
+                printf("Data sent and received are equal.\n");
+            }
+            else
+            {
+                printf("Data mismatch between sent and received.\n");
+                break;
+            }
         }
         transferred_bytes = size_flag * i;
         printf("bytes transferred: %lu\n", transferred_bytes);
@@ -200,6 +201,16 @@ int run_iccom_test()
             }
             printf("[CA5x channel %d] Sent %d bytes\n", channel_no, size_flag);
             usleep(10000);
+            // Compare sent and received data
+            if (memcmp(sp.send_buf, recv_buf, sp.send_size) == 0)
+            {
+                printf("Data sent and received are equal.\n");
+            }
+            else
+            {
+                printf("Data mismatch between sent and received.\n");
+                break;
+            }
         }
         ret = clock_gettime(CLOCK_MONOTONIC, &current_time);
         if (ret < 0)
@@ -208,15 +219,6 @@ int run_iccom_test()
             return ret;
         }
 
-        // Compare sent and received data
-        if (memcmp(sp.send_buf, recv_buf, sp.send_size) == 0)
-        {
-            printf("Data sent and received are equal.\n");
-        }
-        else
-        {
-            printf("Data mismatch between sent and received.\n");
-        }
 
         elapsed_ms = ((current_time.tv_sec - start_time.tv_sec) * MS_IN_S +
                       (current_time.tv_nsec - start_time.tv_nsec) / NS_IN_MS);
