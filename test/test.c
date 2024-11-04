@@ -96,12 +96,26 @@ static void callback(enum Iccom_channel_number ch, uint32_t sz, uint8_t *buf)
 {
     printf("[CA5x channel %d] Received %u bytes", ch, sz);
     printf("\n");
-    recv_buf = buf;
-    rec_bytes += sz;
+
+    // Allocate recv_buf if it hasn't been allocated yet
+    if (recv_buf == NULL) {
+        recv_buf = malloc(size_flag * iteration_count_flag);
+        if (recv_buf == NULL) {
+            printf("Failed to allocate memory for recv_buf\n");
+            return; // Handle error accordingly
+        }
+    }
+
+    // Copy the received data into recv_buf at the correct offset
+    memcpy(recv_buf + rec_bytes, buf, sz); // Copy the new data into the buffer
+    rec_bytes += sz; // Update the total number of bytes received
 }
 
 int run_iccom_test()
 {
+    uint8_t *total_sent_buf = malloc(size_flag * iteration_count_flag);  // Allocate buffer for all sent data
+    uint64_t sent_offset = 0;                                            // Keep track of the position in the sent buffer
+
     Iccom_channel_t pch;
     Iccom_init_param ip;
     Iccom_send_param sp;
@@ -109,6 +123,7 @@ int run_iccom_test()
     struct timespec start_time, current_time;
     int curr_iter, ret = 0;
     uint64_t elapsed_ms, transferred_bytes, total_duration_ms;
+
     // Calculate the total duration in milliseconds
     total_duration_ms = minutes * MS_IN_S * 60;
     ret = clock_gettime(CLOCK_MONOTONIC, &start_time);
@@ -117,9 +132,11 @@ int run_iccom_test()
         printf("clock_gettime failed at start\n");
         return ret;
     }
+    
     ip.recv_buf = rbuf;
     ip.channel_no = channel_no;
     ip.recv_cb = callback;
+    
     ret = Iccom_lib_Init(&ip, &pch);
     if (ret != ICCOM_OK)
     {
@@ -147,10 +164,12 @@ int run_iccom_test()
                 printf("\nSpecified duration of %d minutes reached. Stopping the test.\n", minutes);
                 break;
             }
+            
             memset(cmd.data, i & 0xFF, size_flag);
             sp.send_buf = (uint8_t *)&cmd;
             sp.send_size = size_flag;
             sp.channel_handle = pch;
+
             ret = Iccom_lib_Send(&sp);
             if (ret != ICCOM_OK)
             {
@@ -160,20 +179,20 @@ int run_iccom_test()
             printf("[CA5x channel %d] Sent %d bytes\n", channel_no, size_flag);
             usleep(10000);
             ++i;
-            // Compare sent and received data
-            if (memcmp(sp.send_buf, recv_buf, sp.send_size) == 0)
-            {
-                printf("Data sent and received are equal.\n");
-            }
-            else
-            {
-                printf("Data mismatch between sent and received.\n");
-                break;
-            }
         }
+
+        // Compare sent and received data after the duration
         transferred_bytes = size_flag * i;
-        printf("bytes transferred: %lu\n", transferred_bytes);
-        printf("bytes received: %ld\n", rec_bytes);
+        if (rec_bytes == transferred_bytes)
+        {
+            printf("Data sent and received are equal. \n");
+        }
+        else
+        {
+            printf("Data mismatch between sent (%lu bytes) and received (%lu bytes).\n", transferred_bytes, rec_bytes);
+        }
+        printf("Bytes transferred: %lu\n", transferred_bytes);
+        printf("Bytes received: %lu\n", rec_bytes);
         printf("Elapsed time [ms]: %lu\n", elapsed_ms);
         printf("Throughput: %lu bytes/s\n", (transferred_bytes * 1000) / elapsed_ms);
         printf("Throughput: %1.2f MB/s\n", (transferred_bytes * 1000) / elapsed_ms / 1024.0 / 1024.0);
@@ -193,6 +212,10 @@ int run_iccom_test()
             }
             sp.send_size = size_flag;
             sp.channel_handle = pch;
+
+            memcpy(total_sent_buf + sent_offset, sp.send_buf, sp.send_size);
+            sent_offset += sp.send_size;
+
             ret = Iccom_lib_Send(&sp);
             if (ret != ICCOM_OK)
             {
@@ -201,17 +224,19 @@ int run_iccom_test()
             }
             printf("[CA5x channel %d] Sent %d bytes\n", channel_no, size_flag);
             usleep(10000);
-            // Compare sent and received data
-            if (memcmp(sp.send_buf, recv_buf, sp.send_size) == 0)
-            {
-                printf("Data sent and received are equal.\n");
-            }
-            else
-            {
-                printf("Data mismatch between sent and received.\n");
-                break;
-            }
         }
+        
+        if (rec_bytes == sent_offset && memcmp(total_sent_buf, recv_buf, sent_offset) == 0)  // Compare total buffers
+        {
+            printf("All data sent and received are equal.\n");
+        }
+        else
+        {
+            printf("Data mismatch between sent (%lu bytes) and received (%lu bytes).\n", sent_offset, rec_bytes);
+        }
+
+        // Clean up
+        free(total_sent_buf); 
         ret = clock_gettime(CLOCK_MONOTONIC, &current_time);
         if (ret < 0)
         {
@@ -219,12 +244,11 @@ int run_iccom_test()
             return ret;
         }
 
-
         elapsed_ms = ((current_time.tv_sec - start_time.tv_sec) * MS_IN_S +
                       (current_time.tv_nsec - start_time.tv_nsec) / NS_IN_MS);
         transferred_bytes = size_flag * iteration_count_flag;
         printf("Bytes transferred: %lu\n", transferred_bytes);
-        printf("Bytes received: %ld\n", rec_bytes);
+        printf("Bytes received: %lu\n", rec_bytes);
         printf("Elapsed time [ms]: %lu\n", elapsed_ms);
         printf("Throughput: %lu bytes/s\n", (transferred_bytes * 1000) / elapsed_ms);
         printf("Throughput: %1.2f MB/s\n", (transferred_bytes * 1000) / elapsed_ms / 1024.0 / 1024.0);
@@ -244,10 +268,16 @@ int main(int argc, char **argv)
 {
     int ret = 0;
     ret = parse_input_args(argc, argv);
-    if (ret)
+    if (ret < 0)
     {
-        return ret;
+        return 1;
     }
+
     ret = run_iccom_test();
-    return ret;
+    if (ret < 0)
+    {
+        return 1;
+    }
+
+    return 0;
 }
