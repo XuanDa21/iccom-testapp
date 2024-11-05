@@ -96,19 +96,20 @@ static void callback(enum Iccom_channel_number ch, uint32_t sz, uint8_t *buf)
 {
     printf("[CA5x channel %d] Received %u bytes", ch, sz);
     printf("\n");
-
-    // Allocate recv_buf if it hasn't been allocated yet
-    if (recv_buf == NULL) {
-        recv_buf = malloc(size_flag * iteration_count_flag);
+    if (minutes == 0) {
         if (recv_buf == NULL) {
-            printf("Failed to allocate memory for recv_buf\n");
-            return; // Handle error accordingly
+            recv_buf = malloc(size_flag * iteration_count_flag);
+            if (recv_buf == NULL) {
+                printf("Failed to allocate memory for recv_buf\n");
+                return; 
+            }
         }
+        // Copy the received data into recv_buf at the correct offset
+        memcpy(recv_buf + rec_bytes, buf, sz);
+        rec_bytes += sz;  
+    } else {
+        rec_bytes += sz; 
     }
-
-    // Copy the received data into recv_buf at the correct offset
-    memcpy(recv_buf + rec_bytes, buf, sz); // Copy the new data into the buffer
-    rec_bytes += sz; // Update the total number of bytes received
 }
 
 int run_iccom_test()
@@ -190,6 +191,7 @@ int run_iccom_test()
         else
         {
             printf("Data mismatch between sent (%lu bytes) and received (%lu bytes).\n", transferred_bytes, rec_bytes);
+            exit(0);
         }
         printf("Bytes transferred: %lu\n", transferred_bytes);
         printf("Bytes received: %lu\n", rec_bytes);
@@ -209,9 +211,9 @@ int run_iccom_test()
             {
                 memset(cmd.data, (curr_iter & 0xFF), size_flag);
                 sp.send_buf = (uint8_t *)&cmd;
+                sp.send_size = size_flag;
+                sp.channel_handle = pch;
             }
-            sp.send_size = size_flag;
-            sp.channel_handle = pch;
 
             memcpy(total_sent_buf + sent_offset, sp.send_buf, sp.send_size);
             sent_offset += sp.send_size;
@@ -233,6 +235,7 @@ int run_iccom_test()
         else
         {
             printf("Data mismatch between sent (%lu bytes) and received (%lu bytes).\n", sent_offset, rec_bytes);
+            exit(0);
         }
 
         // Clean up
