@@ -178,7 +178,7 @@ int run_iccom_test()
                 return 1;
             }
             printf("[CA5x channel %d] Sent %d bytes\n", channel_no, size_flag);
-            usleep(10000);
+            usleep(20000);
             ++i;
         }
 
@@ -225,7 +225,7 @@ int run_iccom_test()
                 return 1;
             }
             printf("[CA5x channel %d] Sent %d bytes\n", channel_no, size_flag);
-            usleep(10000);
+            usleep(20000);
         }
         
         if (rec_bytes == sent_offset && memcmp(total_sent_buf, recv_buf, sent_offset) == 0)  // Compare total buffers
