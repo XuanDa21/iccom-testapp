@@ -12,6 +12,7 @@
 #define NS_IN_MS (1000 * 1000)
 #define MS_IN_S 1000
 #define NS_IN_S (NS_IN_MS * MS_IN_S)
+#define DELAY_US 20000
 
 // Function prototypes
 void print_help(int argc, char **argv);
@@ -178,7 +179,7 @@ int run_iccom_test()
                 return 1;
             }
             printf("[CA5x channel %d] Sent %d bytes\n", channel_no, size_flag);
-            usleep(20000);
+            usleep(DELAY_US);
             ++i;
         }
 
@@ -225,7 +226,7 @@ int run_iccom_test()
                 return 1;
             }
             printf("[CA5x channel %d] Sent %d bytes\n", channel_no, size_flag);
-            usleep(20000);
+            usleep(DELAY_US);
         }
         
         if (rec_bytes == sent_offset && memcmp(total_sent_buf, recv_buf, sent_offset) == 0)  // Compare total buffers
