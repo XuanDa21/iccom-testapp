@@ -7,30 +7,24 @@ from conserial import SerialThread
 import print_result
 import config
 import restart_board
-commands1 = (
-    "iccom-test -c 0 -s 2048 -m 1 & "
-    "iccom-test -c 1 -s 2048 -m 1 & "
-    "iccom-test -c 2 -s 2048 -m 1 & "
-    "iccom-test -c 3 -s 2048 -m 1 & "
-)
-
-commands2 = (
-    "iccom-test -c 4 -s 2048 -m 1 & "
-    "iccom-test -c 5 -s 2048 -m 1 & "
-    "iccom-test -c 6 -s 2048 -m 1 & "
-    "iccom-test -c 7 -s 2048 -m 1 & "
+commands = (
+    "iccom-test -c 0 -s 2048 -m 120 & "
+    "iccom-test -c 1 -s 2048 -m 120 & "
+    "iccom-test -c 2 -s 2048 -m 120 & "
+    "iccom-test -c 3 -s 2048 -m 120 & "
+    "iccom-test -c 4 -s 2048 -m 120 & "
+    "iccom-test -c 5 -s 2048 -m 120 & "
+    "iccom-test -c 6 -s 2048 -m 120 & "
+    "iccom-test -c 7 -s 2048 -m 120 & "
 )
 
 if __name__ == '__main__':
     a=SerialThread(config.SERIAL_PORT,1, config.MODULE_TEST)
     a.start()
-    print_result.print_item(a,6,"Normal")
+    print_result.print_item(a,1,"SystemEvaluation")
     restart_board.execute(a)
     a.send("modprobe iccom")
-    a.send(commands1, 0.001, False)
-    a.send("\x03")
-    sleep(0.01)
-    a.send(commands2, 0.001, False)
+    a.send(commands, 0.001, False)
     a.send("\x03")
     sleep(0.01)
     a.send("rmmod iccom.ko")
